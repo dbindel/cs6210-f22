@@ -19,4 +19,4 @@ distclean: clean
 
 copy:
 	mkdir -p ../web/hw
-	cp $(HW) ../web/hw
+	#cp $(HW) ../web/hw

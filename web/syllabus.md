@@ -5,7 +5,7 @@ layout:     main
 
 ### Lecture and section information
 
-CS 6210, Fall 2022
+CS 6210, Fall 2022  
 Lecture time: TR 1:00-2:15  
 Lecture location: Bard 140
 
@@ -14,7 +14,8 @@ Lecture location: Bard 140
 Prof: [David Bindel](http://www.cs.cornell.edu/~bindel)  
 425 Gates Hall  
 Phone: 607-255-5395  
-E-mail: <bindel@cs.cornell.edu>  
+E-mail: <bindel@cornell.edu>  
+OH: MW 3-4, Tue 2:30-3:30
 
 ### Catalog description
 

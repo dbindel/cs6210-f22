@@ -152,7 +152,8 @@
 -
   date: 2022-11-29
   info: Krylov for eigenproblems
-  hw: Final (due date TBD)
+  hw:
+    - info: Final (due date TBD)
 -
   date: 2022-12-01
   info: Review

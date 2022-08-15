@@ -3,7 +3,8 @@
 -
   date: 2022-08-22
   info: Introduction and linear algebra review
-  hw: HW 1 (due 9/6)
+  hw:
+    - info: HW 1 (due 9/6)
 -
   date: 2022-08-24
   info: Matrix calculus, sensitivity, conditioning
@@ -22,7 +23,8 @@
 -
   date: 2022-09-06
   info: Gaussian elimination and Cholesky
-  hw: HW 2 (due 9/13)
+  hw:
+    - info: HW 2 (due 9/13)
 -
   date: 2022-09-08
   info: Error analysis, condition estimation, refinement
@@ -33,7 +35,8 @@
 -
   date: 2022-09-13
   info: Schur complements, blocking, and BLAS3
-  hw: HW 3 (due 9/20)
+  hw:
+    - info: HW 3 (due 9/20)
 -
   date: 2022-09-15
   info: Sparse direct solvers
@@ -43,7 +46,8 @@
 -
   date: 2022-09-20
   info: Introduction to least squares
-  hw: HW 4 (due 9/27)
+  hw:
+    - info: HW 4 (due 9/27)
 -
   date: 2022-09-22
   info: Householder, Givens, and QR factorization
@@ -54,7 +58,8 @@
   date: 2022-09-27
   info: Sensitivity analysis and ill-posedness
   travel: SIAM MDS
-  hw: Midterm (due 10/7)
+  hw:
+    - info: Midterm (due 10/7)
 -
   date: 2022-09-29
   info: Rank deficiency and regularization
@@ -77,7 +82,8 @@
 -
   date: 2022-10-13
   info: Introduction to eigenvalues
-  hw: HW 5 (due 10/25)
+  hw:
+    - info: HW 5 (due 10/25)
 #
 # ==================
 # Week 9
@@ -93,7 +99,8 @@
 -
   date: 2022-10-25
   info: Hessenberg QR iteration
-  hw: HW 6 (due 11/01)
+  hw:
+    - info: HW 6 (due 11/01)
 -
   date: 2022-10-27
   info: Filters and FEAST
@@ -103,7 +110,8 @@
 -
   date: 2022-11-01
   info: Theory for SEP and SVD
-  hw: HW 7 (due 11/08)
+  hw:
+    - info: HW 7 (due 11/08)
 -
   date: 2022-11-03
   info: Solvers for SEP and SVD
@@ -113,7 +121,8 @@
 -
   date: 2022-11-08
   info: Model problems for iterations
-  hw: HW 8 (due 11/15)
+  hw:
+    - info: HW 8 (due 11/15)
 -
   date: 2022-11-10
   info: Stationary iterations
@@ -123,7 +132,8 @@
 -
   date: 2022-11-15
   info: Approximation from Krylov subspaces
-  hw: HW 9 (due 11/22)
+  hw:
+    - info: HW 9 (due 11/22)
 -
   date: 2022-11-17
   info: Lanczos and Arnoldi factorization

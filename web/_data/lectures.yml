@@ -1,13 +1,15 @@
 # ==================
 # Week 1 (intro)
 -
-  date: 2022-08-22
+  date: 2022-08-23
   info: Introduction and linear algebra review
+  notes: 2022-08-23.pdf
   hw:
     - info: HW 1 (due 9/6)
 -
-  date: 2022-08-24
+  date: 2022-08-25
   info: Matrix calculus, sensitivity, conditioning
+  notes: 2022-08-25.pdf
 #
 # ==================
 # Week 2

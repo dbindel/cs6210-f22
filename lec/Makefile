@@ -12,9 +12,9 @@ pdf/%.pdf: notes/%.tex
 	xelatex -output-dir pdf $<
 	xelatex -output-dir pdf $<
 
-pdf/2022-01-24.pdf: notes/2022-01-24.tex
+pdf/2022-08-23.pdf: notes/2022-08-23.tex
 	xelatex -output-dir pdf $<
-	bibtex pdf/2022-01-24
+	bibtex pdf/2022-08-23
 	xelatex -output-dir pdf $<
 	xelatex -output-dir pdf $<
 

@@ -1,0 +1,744 @@
+\documentclass[12pt, leqno]{article} %% use to set typesize
+\include{common}
+
+\begin{document}
+
+\hdr{2022-09-01}
+
+\section{Binary floating point}
+
+Binary floating point arithmetic is essentially scientific notation.
+Where in decimal scientific notation we write
+\[
+  \frac{1}{3}
+  = 3.333\ldots \times 10^{-1},
+\]
+in floating point, we write
+\[
+  \frac{(1)_2}{(11)_2}
+  = (1.010101\ldots)_2 \times 2^{-2}.
+\]
+Because computers are finite, however, we can only keep a finite
+number of bits after the binary point.  We can also only keep a finite
+number of bits for the exponent field.  These facts turn out to have
+interesting implications.
+
+\subsection{Normalized representations}
+
+In general, a {\em normal floating point number} has the form
+\[
+  (-1)^s \times (1.b_1 b_2 \ldots b_p)_2 \times 2^{E},
+\]
+where $s \in \{0,1\}$ is the {\em sign bit},
+$E$ is the {\em exponent}, and
+$(1.b_2 \ldots b_p)_2$ is the {\em significand}.
+The normalized representations are called normalized because they
+start with a one before the binary point.  Because this is always
+the case, we do not need to store that digit explicitly; this gives
+us a ``free'' extra digit.
+
+In the 64-bit double precision format, $p = 52$ bits are used to store
+the significand, 11 bits are used for the exponent, and one bit is
+used for the sign.  The valid exponent range for normal double
+precision floating point numbers is $-1023 < E < 1024$; the number
+$E$ is encoded as an unsigned binary integer $E_{\mathrm{bits}}$
+which is implicitly shifted by 1023 ($E = E_{\mathrm{bits}}-1023$).
+This leaves two exponent encodings left over for special purpose,
+one associated with $E_{\mathrm{bits}} = 0$ (all bits zero),
+and one associated with all bits set; we return to these in a moment.
+
+In the 32-bit single-percision format, $p = 23$ bits are used to store
+the significand, 8 bits are used for the exponent, and one bit is used
+for the sign.  The valid exponent range for normal is $-127 < E < 128$;
+as in the double precision format, the representation is based on an
+unsigned integer and an implicit shift, and two bit patterns are left
+free for other uses.
+
+We will call the distance between 1.0 and the next largest floating
+point number one either an {\em ulp} (unit in the last place) or,
+more frequently, machine epsilon (denoted $\macheps$).  This is
+$2^{-52} \approx 2 \times 10^{-16}$ for double precision and
+$2^{-23} \approx 10^{-7}$ for single precision.  This is the definition
+used in most numerical analysis texts, and in MATLAB and Octave, but
+it is worth noting that in a few places (e.g.~in the C standard),
+call machine epsilon the quantity that is half what we
+call machine epsilon.
+
+\subsection{Subnormal representations}
+
+When the exponent field consists of all zero bits, we have a
+{\em subnormal} representation.
+In general, a {\em subnormal floating point number} has the form
+\[
+  (-1)^s \times (0.b_1 b_2 \ldots b_p)_2 \times 2^{-E_{\mathrm{bias}}},
+\]
+where $E_{\mathrm{bias}}$ is 1023 for double precision and 127
+for single.  Unlike the normal numbers, the subnormal numbers are
+evenly spaced, and so the {\em relative} differences between
+successive subnormals can be much larger than the relative differences
+between successive normals.
+
+Historically, there have been some floating point systems that lack
+subnormal representations; and even today, some vendors encourage
+``flush to zero'' mode arithmetic in which all subnormal results are
+automatically rounded to zero.  But there are some distinct advantage
+to these numbers.  For example, the subnormals allow us to keep the
+equivalence between $x-y = 0$ and $x = y$; without subnormals, this
+identity can fail to hold in floating point.  Apart from helping us
+ensure standard identities, subnormals let us represent numbers close
+to zero with reduced accuracy rather than going from full precision to
+zero abruptly.  This property is sometimes known as {\em gradual underflow}.
+
+The most important of the subnormal numbers is zero.  In fact, we consider
+zero so important that we have two representations: $+0$ and $-0$!
+These representations behave the same in most regards, but the sign
+does play a subtle role; for example, $1/+0$ gives a representation
+for $+\infty$, while $1/-0$ gives a representation for $-\infty$.
+The default value of zero is $+0$; this is what is returned, for example,
+by expressions such as $1.0-1.0$.
+
+\subsection{Infinities and NaNs}
+
+A floating point representation in which the exponent bits are all
+set to one and the signficand bits are all zero represents
+an {\em infinity} (positive or negative).
+
+When the exponent bits are all one and the significand bits are not all
+zero, we have a {\em NaN} (Not a Number).  A NaN is quiet or signaling
+depending on the first bit of the significand; this distinguishes
+between the NaNs that simply propagate through arithmetic and those that
+cause exceptions when operated upon.  The remaining significand bits
+can, in principle, encode information about the details of how and where
+a NaN was generated.  In practice, these extra bits are typically
+ignored.  Unlike infinities (which can be thought of as a computer
+representation of part of the extended reals\footnote{%
+The extended reals in this case means $\bbR$ together with $\pm \infty$.
+This is sometimes called the {\em two-point compactification} of $\bbR$.
+In some areas of analysis (e.g. complex variables),
+the {\em one-point compactification} involving a single, unsigned
+infinity is also useful.  This was explicitly supported in early
+proposals for the IEEE floating point standard, but did not make it in.
+The fact that we have signed infinities in floating point is one reason
+why it makes sense to have signed zeros --- otherwise, for example,
+we would have $1/(1/-\infty)$ yield $+\infty$.
+}), NaN ``lives outside'' the extended real numbers.
+
+Infinity and NaN values represent entities that are not part of the
+standard real number system.  They should not be interpreted
+automatically as ``error values,'' but they should be treated with
+respect.  When an infinity or NaN arises in a code
+in which nobody has analyzed the code correctness in the presence
+of infinity or NaN values, there is likely to be a problem.  But
+when they are accounted for in the design and analysis of a floating
+point routine, these representations have significant
+value.  For example, while an expression like $0/0$ cannot be
+interpreted without context (and therefore yields a NaN in floating
+point), given context --- eg., a computation involving a removable
+singularity --- we may be able to interpret a NaN, and potentially
+replace it with some ordinary floating point value.
+
+\section{Basic floating point arithmetic}
+
+For a general real number $x$, we will write
+\[
+  \fl(x) = \mbox{ correctly rounded floating point representation of } x.
+\]
+By default, ``correctly rounded'' means that we find the closest
+floating point number to $x$, breaking any ties by rounding to the
+number with a zero in the last bit\footnote{%
+There are other rounding modes beside the default, but we will not
+discuss them in this class}.
+If $x$ exceeds the largest normal floating point number,
+then $\fl(x) = \infty$; similarly, if $x$ is a negative number
+with magnitude greater than the most negative normalized floating
+point value, then $\fl(x) = -\infty$.
+
+% DSB: Check eps vs eps/2
+For basic operations (addition, subtraction, multiplication,
+division, and square root), the floating point standard specifies that
+the computer should produce the {\em true result, correctly rounded}.
+So the MATLAB statement
+\lstset{language=matlab,columns=flexible}
+\begin{lstlisting}
+    % Compute the sum of x and y (assuming they are exact)
+    z = x + y;
+\end{lstlisting}
+actually computes the quantity $\hat{z} = \fl(x+y)$.  If $\hat{z}$ is
+a normal double-precision floating point number, it will agree with
+the true $z$ to 52 bits after the binary point.  That is, the relative
+error will be smaller in magnitude than the {\em machine epsilon}
+$\macheps = 2^{-53} \approx 1.1 \times 10^{-16}$:
+\[
+  \hat{z} = z(1+\delta), \quad |\delta| < \macheps.
+\]
+More generally, basic operations that produce normalized numbers are
+correct to within a relative error of $\macheps$.
+
+The floating
+point standard also {\em recommends} that common transcendental functions,
+such as exponential and trig functions, should be correctly rounded\footnote{%
+For algebraic functions, it is possible to determine in advance how many
+additional bits of precision are needed to correctly round the result
+for a function of one input.  In contrast, transcendental functions
+can produce outputs that fall arbitrarily close to the halfway point
+between two floating point numbers.
+},
+though compliant implementations that do not follow with this
+recommendation may produce results with a relative error
+just slightly larger than $\macheps$.
+Correct rounding of transcendentals is useful in large part because it
+implies other properties: for example, if a computer function to evaluate
+a monotone function returns a correctly rounded result, then the computed
+function is also monotone.
+
+Operations in which NaN appears as an input conventionally (but not always)
+produce a NaN output.  Comparisons in which NaN appears conventionally produce false.
+But sometimes there is some subtlety in accomplishing these
+semantics.  For example, the following code for finding the maximum
+element of a vector returns a NaN if one appears
+in the first element, but otherwise results in the largest non-NaN
+element of the array:
+\lstinputlisting{code/mymax1.m}
+In contrast, the following code always propagates a NaN to the output
+if one appears in the input
+\lstinputlisting{code/mymax2.m}
+You are encouraged to play with different vectors involving some NaN
+or all NaN values to see what the semantics for the built-in
+vector max are in MATLAB, Octave, or your language of choice.
+You may be surprised by the results!
+
+Apart from NaN, floating point numbers do correspond to real numbers,
+and comparisons between floating point numbers have the usual semantics
+associated with comparisons between floating point numbers.  The only
+point that deserves some further comment is that plus zero and minus
+zero are considered equal as floating point numbers, despite the fact
+that they are not bitwise identical (and do not produce identical
+results in all input expressions)\footnote{%
+This property of signed zeros is just a little bit horrible.
+But to misquote Winston Churchill, it is the worst
+definition of equality except all the others that have been tried.
+}.
+
+\section{Exceptions}
+
+We say there is an {\em exception} when the floating point result is
+not an ordinary value that represents the exact result.  The most
+common exception is {\em inexact} (i.e. some rounding was needed).
+Other exceptions occur when we fail to produce a normalized floating
+point number.  These exceptions are:
+\begin{description}
+\item[Underflow:]
+  An expression is too small to be represented as a normalized floating
+  point value.  The default behavior is to return a subnormal.
+\item[Overflow:]
+  An expression is too large to be represented as a floating point
+  number.  The default behavior is to return {\tt inf}.
+\item[Invalid:]
+  An expression evaluates to Not-a-Number (such as $0/0$)
+\item[Divide by zero:]
+  An expression evaluates ``exactly'' to an infinite value
+  (such as $1/0$ or $\log(0)$).
+\end{description}
+When exceptions other than inexact occur, the usual ``$1 + \delta$''
+model used for most rounding error analysis is not valid.
+
+An important feature of the floating point standard is that an
+exception should {\em not} stop the computation by default.  This
+is part of why we have representations for infinities and NaNs:
+the floating point system is {\em closed} in the sense that every
+floating point operation will return some result in the floating
+point system.  Instead, by default, an exception is {\em flagged}
+as having occurred\footnote{%
+There is literally a register inside the computer with a set of
+flags to denote whether an exception has occurred in a given
+chunk of code.  This register is highly problematic, as it
+represents a single, centralized piece of global state.  The
+treatment of the exception flags --- and of exceptions generally ---
+played a significant role in the debates leading up to the last revision
+of the IEEE 754 floating point standard,
+and I would be surprised if they are not playing a role again in the
+current revision of the standard.
+}.  An actual exception (in the sense of hardware
+or programming language exceptions) occurs only if requested.
+
+\section{Modeling floating point}
+
+The fact that normal floating point results have a relative error
+bounded by $\macheps$ gives us a useful {\em model} for reasoning about
+floating point error.  We will refer to this as the ``$1 + \delta$''
+model.  For example, suppose $x$ is an exactly-represented input to
+the MATLAB statement
+\begin{lstlisting}
+    z = 1-x*x;
+\end{lstlisting}
+We can reason about the error in the computed $\hat{z}$ as follows:
+\begin{align*}
+  t_1 &= \fl(x^2) = x^2 (1+\delta_1) \\
+  t_2 &= 1-t_1 = (1-x^2)\left( 1 - \frac{\delta_1 x^2}{1-x^2} \right) \\
+  \hat{z}
+  &= \fl(1-t_1)
+    = z \left( 1 - \frac{\delta_1 x^2}{1-x^2} \right)(1+\delta_2) \\
+  & \approx z \left( 1 - \frac{\delta_1 x^2}{1-x^2} +\delta_2 \right),
+\end{align*}
+where $|\delta_1|, |\delta_2| \leq \macheps$.  As before, we throw
+away the (tiny) term involving $\delta_1 \delta_2$.
+Note that if $z$ is close to zero (i.e.~if there is {\em cancellation} in the
+subtraction), then the model shows the result may have a
+large relative error.
+
+\subsection{First-order error analysis}
+
+Analysis in the $1+\delta$ model quickly gets to be a sprawling mess
+of Greek letters unless one is careful.  A standard trick to get
+around this is to use {\em first-order} error analysis in which we
+linearize all expressions involving roundoff errors.  In particular,
+we frequently use the approximations
+\begin{align*}
+  (1+\delta_1)(1+\delta_2) & \approx 1+\delta_1 + \delta_2 \\
+  1/(1+\delta) & \approx 1-\delta.
+\end{align*}
+In general, we will resort to first-order analysis without comment.
+Those students who think this is a sneaky trick to get around our
+lack of facility with algebra\footnote{%
+Which it is.
+}
+may take comfort in the fact that if $|\delta_i| < \macheps$, then
+in double precision
+\[
+  \left| \prod_{i=1}^n (1+\delta_i) \prod_{i=n+1}^N (1+\delta_i)^{-1} \right| < (1+1.03 N \macheps)
+\]
+for $N < 10^{14}$ (and a little further).
+
+\subsection{Shortcomings of the model}
+
+The $1+\delta$ model has two shortcomings.  First, it is only valid
+for expressions that involve normalized numbers --- most notably,
+gradual underflow breaks the model.  Second, the model is sometimes
+pessimistic.  Certain operations, such as taking a difference between
+two numbers within a factor of $2$ of each other, multiplying or
+dividing by a factor of two\footnote{Assuming that the result
+does not overflow or produce a subnormal.}, or multiplying two
+single-precision numbers into a double-precision result,
+are {\em exact} in floating point.  There are useful operations
+such as simulating extended precision using ordinary floating point
+that rely on these more detailed properties of the floating point system,
+and cannot be analyzed using just the $1+\delta$ model.
+
+\section{Finding and fixing floating point problems}
+
+Floating point arithmetic is not the same as real arithmetic.  Even
+simple properties like associativity or distributivity of addition and
+multiplication only hold approximately.  Thus, some computations that
+look fine in exact arithmetic can produce bad answers in floating
+point.  What follows is a (very incomplete) list of some of the ways
+in which programmers can go awry with careless floating point
+programming.
+
+\subsection{Cancellation}
+
+If $\hat{x} = x(1+\delta_1)$ and $\hat{y} = y(1+\delta_2)$ are
+floating point approximations to $x$ and $y$ that are very close, then
+$\fl(\hat{x}-\hat{y})$ may be a poor approximation to $x-y$ due to
+{\em cancellation}.  In some ways, the subtraction is blameless in
+this tail: if $x$ and $y$ are close, then $\fl(\hat{x}-\hat{y}) =
+\hat{x}-\hat{y}$, and the subtraction causes no additional rounding
+error.  Rather, the problem is with the approximation error already
+present in $\hat{x}$ and $\hat{y}$.
+
+The standard example of loss of accuracy revealed through cancellation
+is in the computation of the smaller root of a quadratic using the
+quadratic formula, e.g.
+\[
+  x = 1-\sqrt{1-z}
+\]
+for $z$ small.  Fortunately, some algebraic manipulation gives an
+equivalent formula that does not suffer cancellation:
+\[
+  x =
+    \left( 1-\sqrt{1-z} \right)
+    \left(\frac{1+\sqrt{1-z}}{1+\sqrt{1-z}}\right)
+  =
+    \frac{z}{1+\sqrt{1-z}}.
+\]
+
+\subsection{Sensitive subproblems}
+
+We often solve problems by breaking them into simpler subproblems.
+Unfortunately, it is easy to produce badly-conditioned subproblems
+as steps to solving a well-conditioned problem.  As a simple (if
+contrived) example, try running the following MATLAB code:
+
+\lstinputlisting{code/sillysqrt.m}
+
+In exact arithmetic, this should produce 2, but what does it produce
+in floating point?  In fact, the first loop produces a correctly
+rounded result, but the second loop represents the function
+$x^{2^{60}}$, which has a condition number far greater than $10^{16}$
+--- and so all accuracy is lost.
+
+\subsection{Unstable recurrences}
+
+One of my favorite examples of this problem is the recurrence relation
+for computing the integrals
+\[
+  E_n = \int_{0}^1 x^n e^{x-1} \, dx.
+\]
+Integration by parts yields the recurrence
+\begin{align*}
+  E_0 &= 1-1/e \\
+  E_n &= 1-nE_{n-1}, \quad n \geq 1.
+\end{align*}
+This looks benign enough at first glance: no single step of
+this recurrence causes the error to explode.  But
+each step amplifies the error somewhat, resulting in an exponential
+growth in error\footnote{%
+Part of the reason that I like this example is that one can
+run the recurrence {\em backward} to get very good results,
+based on the estimate $E_n \approx 1/(n+1)$ for $n$ large.
+}.
+
+\subsection{Undetected underflow}
+
+In Bayesian statistics, one sometimes computes ratios of long
+products.  These products may underflow individually, even when the
+final ratio is not far from one.  In the best case, the products will
+grow so tiny that they underflow to zero, and the user may notice an
+infinity or NaN in the final result.  In the worst case, the
+underflowed results will produce nonzero subnormal numbers with
+unexpectedly poor relative accuracy, and the final result will be
+wildly inaccurate with no warning except for the (often ignored)
+underflow flag.
+
+\subsection{Bad branches}
+
+A NaN result is often a blessing in disguise: if you see an
+unexpected NaN, at least you {\em know} something has gone wrong!
+But all comparisons involving NaN are false,  and so
+when a floating point result is used to compute a branch condition
+and an unexpected NaN appears, the result can wreak havoc.
+As an example, try out the following code in MATLAB.
+
+\lstinputlisting{code/testnan.m}
+
+\section{Sums and dots}
+
+We already described a couple of floating point examples that
+involve evaluation of a fixed formula (e.g.~computation of
+the roots of a quadratic).  We now turn to the analysis of
+some of the building blocks for linear algebraic computations:
+sums and dot products.
+
+\subsection{Sums two ways}
+
+As an example of first-order error analysis, consider the following
+code to compute a sum of the entries of a vector $v$:
+\begin{lstlisting}
+  s = 0;
+  for k = 1:n
+    s = s + v(k);
+  end
+\end{lstlisting}
+Let $\hat{s}_k$ denote the computed sum at step $k$ of the loop;
+then we have
+\begin{align*}
+  \hat{s}_1 &= v_1 \\
+  \hat{s}_k &= (\hat{s}_{k-1} + v_k)(1 + \delta_k), \quad k > 1.
+\end{align*}
+Running this forward gives
+\begin{align*}
+  \hat{s}_2 &= (v_1 + v_2)(1+\delta_2) \\
+  \hat{s}_3 &= ((v_1 + v_2)(1+\delta_2) + v_3)(1+\delta_2)
+\end{align*}
+and so on.  Using first-order analysis, we have
+\[
+  \hat{s}_k \approx (v_1 + v_2)\left(1 + \sum_{j=2}^k \delta_j \right)
+              + \sum_{l=3}^k v_l \left( 1 + \sum_{j=l}^k \delta_j \right),
+\]
+and the difference between $\hat{s}_k$ and the exact partial sum
+is then
+\[
+  \hat{s}_k-s_k \approx \sum_{j=2}^k s_j \delta_j.
+\]
+Using $\|v\|_1$ as a uniform bound on all the partial sums, we have
+\[
+  |\hat{s}_n-s_n| \lesssim (n-1) \macheps \|v\|_2.
+\]
+
+An alternate analysis, which is a useful prelude to analyses to come
+involves writing an error recurrence.
+Taking the difference between $\hat{s}_k$ and the true partial sums $s_k$,
+we have
+\begin{align*}
+  e_1 &= 0 \\
+  e_{k} &= \hat{s}_k-s_k \\
+        &= (\hat{s}_{k-1} + v_k)(1+\delta_k) - (s_{k-1} + v_k) \\
+        &= e_{k-1} + (\hat{s}_{k-1} + v_k) \delta_k,
+\end{align*}
+and $\hat{s}_{k-1} + v_k = s_k + O(\macheps)$, so that
+\[
+  |e_{k}| \leq |e_{k-1}| + |s_k| \macheps + O(\macheps^2).
+\]
+Therefore,
+\[
+  |e_{n}| \lesssim (n-1) \macheps \|v\|_1,
+\]
+which is the same bound we had before.
+
+\subsection{Backward error analysis for sums}
+
+In the previous subsection, we showed an error analysis for partial sums
+leading to the expression:
+\[
+  \hat{s}_n \approx (v_1 + v_2) \left(1 + \sum_{j=2}^n \delta_j \right)
+              + \sum_{l=3}^n v_l \left( 1 + \sum_{j=l}^n \delta_j \right).
+\]
+We then proceded to aggregate all the rounding error terms in order to
+estimate the error overall.  As an alternative to aggregating the roundoff,
+we can also treat the rounding errors as perturbations to the input
+variables (the entries of $v$); that is, we write the computed sum as
+\[
+  \hat{s}_n = \sum_{j=1}^n \hat{v}_j
+\]
+where
+\[
+  \hat{v}_j = v_j (1+\eta_j), \quad
+  \mbox{ where }|\eta_j| \lesssim (n+1-j) \macheps.
+\]
+This gives us a {\em backward error} formulation of the rounding:
+we have re-cast the role of rounding error in terms of a
+perturbation to the input vector $v$.  In terms of the 1-norm,
+we have the relative error bound
+\[
+  \|\hat{v}-v\|_1 \lesssim n \macheps \|v\|_1;
+\]
+or we can replace $n$ with $n-1$ by being a little more careful.
+Either way, what we have shown is that the summation algorithm
+is {\em backward stable}, i.e.~we can ascribe the roundoff to
+a (normwise) small relative error with a bound of $C \macheps$
+where the constant $C$ depends on the size $n$ like some low-degree
+polynomial.
+
+Once we have a bound on the backward error, we can bound the forward
+error via a condition number.  That is, suppose we write the true
+and perturbed sums as
+\begin{align*}
+  s &= \sum_{j=1}^n v_j &
+  \hat{s} &= \sum_{j=1}^n \hat{v}_j.
+\end{align*}
+We want to know the relative error in $\hat{s}$ via a normwise
+relative error bound in $\hat{v}$, which we can write as
+\[
+  \frac{|\hat{s}-s|}{|s|} =
+  \frac{|\sum_{j=1}^n (\hat{v}_j-v_j)|}{|s|} \leq
+  \frac{\|\hat{v}-v\|_1}{|s|} =
+  \frac{\|v\|_1}{|s|} \frac{\|\hat{v}-v\|_1}{\|v\|_1}.
+\]
+That is, $\|v\|_1/|s|$ is the condition number for the summation
+problem, and our backward stability analysis implies
+\[
+  \frac{|\hat{s}-s|}{|s|} \leq
+  \frac{\|v\|_1}{|s|} n \macheps.
+\]
+This is the general pattern we will see again in the future:
+our analysis consists of a backward error computation that depends
+purely on the algorithm, together with a condition number that depends
+purely on the problem.  Together, these give us forward error bounds.
+
+\subsection{Running error bounds for sums}
+
+In all the analysis of summation we have done so far, we ultimately
+simplified our formulas by bounding some quantity in terms of $\|v\|_1$.
+This is nice for algebra, but we lose some precision in the process.
+An alternative is to compute a {\em running error bound}, i.e.~augment
+the original calculation with something that keeps track of the error
+estimates.  We have already seen that the error in the computations
+looks like
+\[
+  \hat{s}_n-s_n = \sum_{j=2}^n s_j \delta_j + O(\macheps^2),
+\]
+and since $s_j$ and $\hat{s}_j$ differ only by $O(\macheps)$ terms,
+\[
+  |\hat{s}_n-s_n| \lesssim \sum_{j=2}^n |\hat{s}_j| \macheps + O(\macheps^2),
+\]
+We are not worried about doing a rounding error analysis of our rounding
+error analysis --- in general, we care more about order of magnitude for
+rounding error anyhow --- so the following routine does an adequate job
+of computing an (approximate) upper bound on the error in the summation:
+\begin{lstlisting}
+  s = 0;
+  e = 0;
+  for k = 1:n
+    s = s + v(k);
+    e = e + abs(s) * eps;
+  end
+\end{lstlisting}
+
+\subsection{Compensated summation}
+
+We conclude our discussion of rounding analysis for summation
+with a comment on the {\em compensated summation} algorithm of
+Kahan, which is not amenable to straightforward $1+\delta$ analysis.
+The algorithm maintains the partial sums not as a single variable
+{\tt s}, but as an unevaluated sum of two
+variables {\tt s} and {\tt c}:
+\begin{lstlisting}
+  s = 0;
+  c = 0;
+  for k = 1:n
+    y = v(i) - c;
+    t = s + y;
+    c = (t - s) - y;  % Key step
+    s = t;
+  end
+\end{lstlisting}
+Where the error bound for ordinary summation is
+$(n-1) \macheps \|v\|_1 + O(\macheps^2)$,
+the error bound for compensated summation is
+$2 \macheps \|v\|_1 + O(\macheps^2)$.  Moreover,
+compensated summation is exact for adding up to $2^k$
+terms that are within about $2^{p-k}$ of each other
+in magnitude.
+
+Nor is Kahan's algorithm the end of the story!
+Higham's {\em Accuracy and Stability of Numerical Methods}
+devotes an entire chapter to summation methods, and there
+continue to be papers written on the topic.  For our purposes,
+though, we will wrap up here with two observations:
+\begin{itemize}
+\item Our initial analysis in the $1+\delta$ model illustrates the
+  general shape these types of analyses take and how we can re-cast
+  the effect of rounding errors as a ``backward error'' that perturbs
+  the inputs to an exact problem.
+\item The existence of algorithms like Kahan's compensated summation
+  method should indicate that the backward-error-and-conditioning
+  approach to rounding analysis is hardly the end of the story.
+  One could argue it is hardly the beginning!  But it is the approach
+  we will be using for most of the class.
+\end{itemize}
+
+\subsection{Dot products}
+
+We conclude with one more example error analysis, this time involving
+a real dot product computed by a loop of the form
+\begin{lstlisting}
+  dot = 0;
+  for k = 1:n
+    dot = dot + x(k)*y(k);
+  end
+\end{lstlisting}
+Unlike the simple summation we analyzed above, the dot product involves
+two different sources of rounding errors: one from the summation,
+and one from the product.  As in the case of simple summations, it is
+convenient to re-cast this error in terms of perturbations to the input.
+We could do this all in one go, but since we have already spent so much
+time on summation, let us instead do it in two steps.  Let $v_k = x_k y_k$;
+in floating point, we get $\hat{v}_k = v_k (1+\eta_k)$
+where $|\eta_k| < \macheps$.  Further,
+we have already done a backward error analysis of summation to show
+that the additional error in summation can be cast onto the summands,
+i.e.~the floating point result is $\sum_k \tilde{v}_k$ where
+\begin{align*}
+  \tilde{v}_k
+  &= \hat{v}_k (1 + \sum_{j=\min(2,n)}^n \delta_j) (1 + \eta_k) + O(\macheps^2) \\
+  &= v_k (1+\gamma_k) + O(\macheps^2)
+\end{align*}
+where
+\[
+  |\gamma_k| = |\eta_k + \sum_{j=\min(2,n)}^n \delta_j| \leq n \macheps.
+\]
+Rewriting $v_k(1+\gamma_k)$ as $\hat{x}_k y_k$ where
+$\hat{x}_k = x_k (1+\gamma_k)$, we have that the computed inner
+product $y^T x$ is equivalent to the exact inner product of $y^T \hat{x}$
+where $\hat{x}$ is an elementwise relatively accurate
+(to within $n \macheps + O(\macheps^2)$) approximation to $x$.
+
+A similar backward error analysis shows that computed matrix-matrix
+products $AB$ in general can be interpreted as $\hat{A} B$ where
+\[
+  |\hat{A}-A| < p \macheps |A| + O(\macheps^2)
+\]
+and $p$ is the inner dimension of the product.  Exactly what $\hat{A}$
+is depends not only on the data, but also the loop order used in the
+multiply --- since, as we recall, the order of accumulation may vary
+from machine to machine depending on what blocking is best suited to
+the cache!  But the bound on the backward error holds for all the common
+re-ordering\footnote{%
+For those of you who know about Strassen's algorithm --- it's not
+backward stable, alas.
+}
+And this backward error characterization, together with the
+type of sensitivity analysis for matrix multiplication that we have
+already discussed, gives us a uniform framework for obtaining
+forward error bounds for matrix-matrix muliplication; and the same
+type of analysis will continue to dominate our discussion of rounding
+errors as we move on to more complicated matrix computations.
+
+\section{Problems to ponder}
+
+\begin{enumerate}
+\item
+  How do we accurately evaluate $\sqrt{1+x}-\sqrt{1-x}$ when $x \ll 1$?
+\item
+  How do we accurately evaluate $\ln \sqrt{x+1}-\ln\sqrt{x}$ when $x \gg 1$?
+\item
+  How do we accurately evaluate $(1-\cos(x))/\sin(x)$ when $x \ll 1$?
+\item
+  How would we compute $\cos(x)-1$ accurately when $x \ll 1$?
+\item
+  The {\em Lamb-Oseen vortex} is a solution to the 2D Navier-Stokes
+  equation that plays a key role in some methods for computational
+  fluid dynamics.  It has the form
+  \[
+    v_{\theta}(r,t) = \frac{\Gamma}{2 \pi r}
+      \left( 1 - \exp\left( \frac{-r^2}{4 \nu t} \right) \right)
+  \]
+  How would one evaluate $v(r,t)$ to high relative accuracy for all
+  values of $r$ and $t$ (barring overflow or underflow)?
+\item
+  For $x > 1$, the equation $x = \cosh(y)$ can be solved as
+  \[
+    y = -\ln\left(x - \sqrt{x^2-1}\right).
+  \]
+  What happens when $x = 10^8$?  Can we fix it?
+\item
+  The difference equation
+  \[
+    x_{k+1} = 2.25x_k - 0.5 x_{k-1}
+  \]
+  with starting values
+  \[
+    x_1 = \frac{1}{3}, \qquad x_2 = \frac{1}{12}
+  \]
+  has solution
+  \[
+    x_k = \frac{4^{1-k}}{3}.
+  \]
+  Is this what you actually see if you compute?  What goes wrong?
+\item
+  Considering the following two MATLAB fragments:
+\begin{lstlisting}
+    % Version 1
+    f = (exp(x)-1)/x;
+
+    % Version 2
+    y = exp(x);
+    f = (1-y)/log(y);
+\end{lstlisting}
+  In exact arithmetic, the two fragments are equivalent.  In floating
+  point, the first formulation is inaccurate for $x \ll 1$, while the
+  second formulation remains accurate.  Why?
+\item
+  Running the recurrence $E_n = 1-nE_{n-1}$ {\em forward} is an
+  unstable way to compute $\int_0^1 x^n e^{x-1} \, dx$.  However, we
+  can get good results by running the recurrence {\em backward} from
+  the estimate $E_n \approx 1/(N+1)$ starting at large enough $N$.
+  Explain why.  How large must $N$ be to compute $E_{20}$ to near
+  machine precision?
+\item
+  How might you accurately compute this function for $|x| < 1$?
+  \[
+    f(x) = \sum_{j=0}^\infty \left( \cos(x^j)-1 \right)
+  \]
+\end{enumerate}
+
+\end{document}

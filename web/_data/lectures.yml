@@ -16,9 +16,21 @@
 -
   date: 2022-08-30
   info: Matrix representations and operations
+  notes: 2022-08-30.pdf
+  ulinks:
+    - info: NB (Julia)
+      url: lec/2022-08-30.jl
+    - info: NB (HTML)
+      url: lec/2022-08-30.jl.html
 -
   date: 2022-09-01
   info: Floating point and error analysis
+  notes: 2022-09-01.pdf
+  ulinks:
+    - info: NB (Julia)
+      url: lec/2022-09-01.jl
+    - info: NB (HTML)
+      url: lec/2022-09-01.jl.html
 #
 # ==================
 # Week 3

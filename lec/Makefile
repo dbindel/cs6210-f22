@@ -3,7 +3,13 @@ TEXINPUTS:=.
 LEC= \
 	pdf/background.pdf \
 	pdf/2022-08-23.pdf \
-	pdf/2022-08-25.pdf
+	pdf/2022-08-25.pdf \
+	pdf/2022-08-30.pdf \
+	pdf/2022-09-01.pdf \
+	pluto/2022-08-30.jl \
+	pluto/2022-08-30.jl.html \
+	pluto/2022-09-01.jl \
+	pluto/2022-09-01.jl.html
 
 .PHONY: all copy
 all: $(LEC)
@@ -15,6 +21,12 @@ pdf/%.pdf: notes/%.tex
 pdf/2022-08-23.pdf: notes/2022-08-23.tex
 	xelatex -output-dir pdf $<
 	bibtex pdf/2022-08-23
+	xelatex -output-dir pdf $<
+	xelatex -output-dir pdf $<
+
+pdf/2022-08-30.pdf: notes/2022-08-30.tex
+	xelatex -output-dir pdf $<
+	bibtex pdf/2022-08-30
 	xelatex -output-dir pdf $<
 	xelatex -output-dir pdf $<
 

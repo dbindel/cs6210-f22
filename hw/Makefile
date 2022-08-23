@@ -1,6 +1,7 @@
 TEXINPUTS:=.
 
-HW=
+HW=	hw1.jl \
+	hw1.jl.html
 
 .PHONY: all copy
 all: $(HW)
@@ -19,4 +20,4 @@ distclean: clean
 
 copy:
 	mkdir -p ../web/hw
-	#cp $(HW) ../web/hw
+	cp $(HW) ../web/hw

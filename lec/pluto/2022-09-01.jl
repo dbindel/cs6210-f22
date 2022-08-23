@@ -106,6 +106,48 @@ bitstring(0.0/0.0)
 # ╔═╡ e80fd10c-8ff7-45ba-8bd2-1ac9b692d131
 bitstring(0.0/0.0)[13:end]
 
+# ╔═╡ 96653a25-cc6b-42d1-9712-f6737c5a11ab
+md"""
+## Arithmetic examples
+"""
+
+# ╔═╡ ae9a35e0-86e7-4a0b-b7ad-546bd70d19b6
+# Find the maximum element of a vector -- naive about NaN
+function mymax1(v)
+	vmax = v[1];
+	for k = 2:length(v)
+		if v[k] > vmax
+			vmax = v[k]
+		end
+	end
+	vmax
+end
+
+# ╔═╡ 0f0dde2a-83ce-4f20-a4c3-0c8b8d5fee36
+# Find the maximum element of a vector -- more careful about NaNs
+function mymax2(v)
+	vmax = v[1];
+	for k = 2:length(v)
+		if isnan(v[k]) | (v[k] > vmax)
+			vmax = v[k]
+		end
+	end
+	vmax
+end
+
+# ╔═╡ 87ac1636-efdc-40d6-a94e-9300c9f4bd8f
+let
+	x = [1.0; 0.0/0.0; 3.0; 2.0]
+	vmax_ref = maximum(x)
+	vmax1 = mymax1(x)
+	vmax2 = mymax2(x)
+md"""
+- ref = $vmax_ref
+- v1 = $vmax1
+- v2 = $vmax2
+"""
+end
+
 # ╔═╡ 11d0646f-5bf2-4a20-93a3-512340cc446b
 md"""
 ## Illustrated floating point mishaps
@@ -434,6 +476,10 @@ version = "5.1.1+0"
 # ╟─cf31a79a-0e3b-4aaf-a5ba-645283dff785
 # ╠═2ada806a-fa22-4737-b2fd-2b10fc10700a
 # ╠═e80fd10c-8ff7-45ba-8bd2-1ac9b692d131
+# ╟─96653a25-cc6b-42d1-9712-f6737c5a11ab
+# ╠═ae9a35e0-86e7-4a0b-b7ad-546bd70d19b6
+# ╠═0f0dde2a-83ce-4f20-a4c3-0c8b8d5fee36
+# ╠═87ac1636-efdc-40d6-a94e-9300c9f4bd8f
 # ╟─11d0646f-5bf2-4a20-93a3-512340cc446b
 # ╟─617f29d4-94ea-42b7-a3a7-db38afdefd88
 # ╠═87969ad1-8611-4190-b101-de41a6652aef

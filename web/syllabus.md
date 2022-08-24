@@ -17,6 +17,10 @@ Phone: 607-255-5395
 E-mail: <bindel@cornell.edu>  
 OH: MW 3-4, Tue 2:30-3:30
 
+TA: Abhay Singh
+E-mail: <as2626@cornell.edu>
+OH: Friday 1:30-2:30 (Rhodes 406)
+
 ### Catalog description
 
 4 credits.  Stable and efficient algorithms for linear equations, least

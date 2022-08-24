@@ -10,6 +10,6 @@ see items that ought to be corrected.
 Note: I encourage you to use Git for your own work, but please do *not*
 put your assignment solutions in public [GitHub][gh] repositories.
 
-[cs6210]: https://www.cs.cornell.edu/courses/cs6210/2022/
+[cs6210]: https://www.cs.cornell.edu/courses/cs6210/2022fa/
 [gh]: http://github.com/
 [bb]: https://bitbucket.org

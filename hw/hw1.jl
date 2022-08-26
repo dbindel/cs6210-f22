@@ -40,8 +40,8 @@ You may use the following tester as a sanity check.
 function check_p2(A, x, G, g, h = 1e-4)
 
 	# Pick a random direction
-	δA = rand(size(A))
-	δx = rand(size(x))
+	δA = rand(size(A)...)
+	δx = rand(size(x)...)
 
 	# Compute an estimated directional derivative by finite differences
 	np = norm((A+h*δA)*(x+h*δx))^2

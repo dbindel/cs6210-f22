@@ -37,6 +37,7 @@
 -
   date: 2022-09-06
   info: Floating point error, backward error analysis, conditioning
+  notes: 2022-09-06.pdf
   hw:
     - info: HW 2 (due 9/13)
 -

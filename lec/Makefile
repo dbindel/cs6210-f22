@@ -6,6 +6,7 @@ LEC= \
 	pdf/2022-08-25.pdf \
 	pdf/2022-08-30.pdf \
 	pdf/2022-09-01.pdf \
+	pdf/2022-09-06.pdf \
 	pluto/2022-08-30.jl \
 	pluto/2022-08-30.jl.html \
 	pluto/2022-09-01.jl \

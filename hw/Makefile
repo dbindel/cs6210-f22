@@ -1,7 +1,9 @@
 TEXINPUTS:=.
 
 HW=	hw1.jl \
-	hw1.jl.html
+	hw2.jl \
+	hw1.jl.html \
+	hw2.jl.html
 
 .PHONY: all copy
 all: $(HW)

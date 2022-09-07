@@ -45,6 +45,11 @@
   info: Gaussian elimination and Cholesky I
   notes: 2022-09-08.pdf
   travel: Tapia conference
+  ulinks:
+    - info: Work NB (Julia)
+      url: lec/2022-09-08-worksheet.jl
+    - info: Work NB (HTML)
+      url: lec/2022-09-08-worksheet.jl.html
 #
 # ==================
 # Week 4

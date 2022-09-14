@@ -2,8 +2,10 @@ TEXINPUTS:=.
 
 HW=	hw1.jl \
 	hw2.jl \
+	hw3.jl \
 	hw1.jl.html \
-	hw2.jl.html
+	hw2.jl.html \
+	hw3.jl.html 
 
 .PHONY: all copy
 all: $(HW)

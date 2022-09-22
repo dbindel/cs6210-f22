@@ -12,6 +12,8 @@ LEC= \
 	pdf/2022-09-15.pdf \
 	pdf/2022-09-20.pdf \
 	pdf/2022-09-22.pdf \
+	pdf/2022-09-27.pdf \
+	pdf/2022-09-29.pdf \
 	pluto/2022-08-30.jl \
 	pluto/2022-08-30.jl.html \
 	pluto/2022-09-01.jl \

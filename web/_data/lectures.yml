@@ -87,11 +87,13 @@
 -
   date: 2022-09-27
   info: Sensitivity analysis and ill-posedness
+  notes: 2022-09-27.pdf
   travel: SIAM MDS
   hw:
     - info: Midterm (due 10/7)
 -
   date: 2022-09-29
+  notes: 2022-09-29.pdf
   info: Rank deficiency and regularization
   travel: SIAM MDS
 #

@@ -4,10 +4,12 @@ HW=	hw1.jl \
 	hw2.jl \
 	hw3.jl \
 	hw4.jl \
+	mt.jl \
 	hw1.jl.html \
 	hw2.jl.html \
 	hw3.jl.html \
-	hw4.jl.html 
+	hw4.jl.html \
+	mt.jl.html 
 
 .PHONY: all copy
 all: $(HW)

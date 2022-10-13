@@ -17,7 +17,7 @@ md"""
 
 Suppose $X, Y \in \mathbb{R}^{n \times k}$.  Show that if $\lambda \neq 0$ is an eigenvalue of $XY^T$, then
 
-$$\begin{bmatrix} -\lambda I & X \\ Y^T & I \end{bmatrix}$$
+$$\begin{bmatrix} -\lambda I & X \\ Y^T & -I \end{bmatrix}$$
 
 is singular.  Via this formulation, show that $\lambda$ must also be an eigenvalue of $Y^T X$.
 """
@@ -51,8 +51,26 @@ so that $l^* x = 1$.
 Differentiate the eigenvalue equation $Ax = \lambda x$ subject to this linear constraint in order to obtain a linear system for derivatives of $x$ and $\lambda$ under small variations of $A$.
 """
 
+# ╔═╡ 00000000-0000-0000-0000-000000000001
+PLUTO_PROJECT_TOML_CONTENTS = """
+[deps]
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-000000000002
+PLUTO_MANIFEST_TOML_CONTENTS = """
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.8.0"
+manifest_format = "2.0"
+project_hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+
+[deps]
+"""
+
 # ╔═╡ Cell order:
 # ╟─97e46e8a-227b-11ed-3ad4-bf493f45d214
 # ╟─7a18f12a-94db-4b8e-907d-61038796ef1e
 # ╟─6aa9a580-41f6-40dd-98e8-bb6ba4892d54
 # ╟─ca16b7cc-bf54-4176-9b84-d67c01e746b6
+# ╟─00000000-0000-0000-0000-000000000001
+# ╟─00000000-0000-0000-0000-000000000002

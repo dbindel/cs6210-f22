@@ -29,7 +29,7 @@ md"""
 Suppose $A \in \mathbb{R}^{2 \times 2}$ has a complex pair of eigenvalues $\lambda_{\pm} = \rho \exp(\pm i \theta)$ (with nonzero imaginary part) and eigenvectors $z_{\pm} = u \pm i v$.
 Show that
 
-$$A W = W (\rho G) W^{-1}$$
+$$A = W (\rho G) W^{-1}$$
 
 where
 

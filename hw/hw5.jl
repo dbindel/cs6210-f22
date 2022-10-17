@@ -35,8 +35,8 @@ where
 
 $$W = \begin{bmatrix} u & v \end{bmatrix}, \quad
   G = \begin{bmatrix} 
-        \cos(\theta) & -\sin(\theta) \\ 
-        \sin(\theta) & \cos(\theta) 
+        \cos(\theta) & \sin(\theta) \\ 
+    	-\sin(\theta) & \cos(\theta) 
       \end{bmatrix}.$$
 
 Why must $W$ be invertible?

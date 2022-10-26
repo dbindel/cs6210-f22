@@ -141,13 +141,14 @@
     - info: HW 6 (due 11/01)
 -
   date: 2022-10-27
-  info: Filters and FEAST
+  info: Theory for SEP and SVD
+  notes: 2022-10-27.pdf
 #
 # ==================
 # Week 11
 -
   date: 2022-11-01
-  info: Theory for SEP and SVD
+  info: Solvers for SEP and SVD
   hw:
     - info: HW 7 (due 11/08)
 -

@@ -6,6 +6,7 @@ HW=	hw1.jl \
 	hw4.jl \
 	hw5.jl \
 	hw6.jl \
+	hw7.jl \
 	mt.jl \
 	hw1.jl.html \
 	hw2.jl.html \
@@ -13,6 +14,7 @@ HW=	hw1.jl \
 	hw4.jl.html \
 	hw5.jl.html \
 	hw6.jl.html \
+	hw7.jl.html \
 	mt.jl.html 
 
 .PHONY: all copy

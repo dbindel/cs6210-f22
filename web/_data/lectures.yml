@@ -154,7 +154,8 @@
     - info: HW 7 (due 11/08)
 -
   date: 2022-11-03
-  info: Solvers for SEP and SVD
+  info: Other eigenvalue problems
+  notes: 2022-11-03.pdf
 #
 # ==================
 # Week 12

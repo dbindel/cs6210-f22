@@ -161,29 +161,31 @@
 # Week 12
 -
   date: 2022-11-08
-  info: Model problems for iterations
+  info: Stationary iterations
+  notes: 2022-11-08.pdf
   hw:
     - info: HW 8 (due 11/15)
 -
   date: 2022-11-10
-  info: Stationary iterations
+  info: Approximation from Krylov subspaces
+  notes: 2022-11-10.pdf
 #
 # ==================
 # Week 13
 -
   date: 2022-11-15
-  info: Approximation from Krylov subspaces
+  info: Lanczos and Arnoldi factorization
   hw:
     - info: HW 9 (due 11/22)
 -
   date: 2022-11-17
-  info: Lanczos and Arnoldi factorization
+  info: CG and GMRES
 #
 # ==================
 # Week 14
 -
   date: 2022-11-22
-  info: CG and GMRES
+  info: Preconditioning
 -
   date: 2022-11-24
   break: Thanksgiving

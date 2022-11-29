@@ -10,6 +10,7 @@ HW=	hw1.jl \
 	hw8.jl \
 	hw9.jl \
 	mt.jl \
+	final.jl \
 	hw1.jl.html \
 	hw2.jl.html \
 	hw3.jl.html \
@@ -19,7 +20,8 @@ HW=	hw1.jl \
 	hw7.jl.html \
 	hw8.jl.html \
 	hw9.jl.html \
-	mt.jl.html 
+	mt.jl.html \
+	final.jl.html 
 
 .PHONY: all copy
 all: $(HW)
